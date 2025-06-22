@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Market Analysis Project</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: #161b22;
+            border-bottom: 1px solid #21262d;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #f0f6fc;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #e6edf3;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: #21262d;
+        }
+
+        .nav-links a.active {
+            background: #1f6feb;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .project-meta {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem auto;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-around;
+            color: white;
+        }
+
+        .meta-item {
+            text-align: center;
+        }
+
+        .meta-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .section-header h2 {
+            color: #f0f6fc;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .section-header .badge {
+            background: #1f6feb;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .card h3 {
+            color: #f0f6fc;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f6feb;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        .insight-box {
+            background: #0d1117;
+            border: 1px solid #21262d;
+            border-left: 3px solid #1f6feb;
+            padding: 1rem;
+            border-radius: 0 6px 6px 0;
+            margin: 1rem 0;
+        }
+
+        .insight-box h4 {
+            color: #1f6feb;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .insight-box p {
+            color: #e6edf3;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .recommendation-box {
+            background: #0d1520;
+            border: 1px solid #1f6feb;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .recommendation-box h4 {
+            color: #1f6feb;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .recommendation-box p {
+            color: #e6edf3;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .methodology {
+            background: #0d1117;
+            border: 1px solid #21262d;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .methodology h3 {
+            color: #f0f6fc;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .methodology ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .methodology li {
+            color: #e6edf3;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .methodology li::before {
+            content: "→";
+            color: #1f6feb;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: #0d1117;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #21262d;
+            color: #e6edf3;
+        }
+
+        .data-table th {
+            background: #161b22;
+            font-weight: 600;
+            color: #f0f6fc;
+        }
+
+        .data-table tr:hover {
+            background: #161b22;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-high {
+            background: #0d4226;
+            color: #2ea043;
+            border: 1px solid #2ea043;
+        }
+
+        .status-medium {
+            background: #4d2d00;
+            color: #fb8500;
+            border: 1px solid #fb8500;
+        }
+
+        .status-low {
+            background: #4c1a1a;
+            color: #f85149;
+            border: 1px solid #f85149;
+        }
+
+        .footer {
+            background: #161b22;
+            border-top: 1px solid #21262d;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .footer p {
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tech-tag {
+            background: #21262d;
+            color: #e6edf3;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid #30363d;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="project-title">Real Estate Market Analysis</div>
+            <ul class="nav-links">
+                <li><a href="#overview" class="active">Overview</a></li>
+                <li><a href="#methodology">Methodology</a></li>
+                <li><a href="#results">Results</a></li>
+                <li><a href="#insights">Insights</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="header">
+        <h1>Real Estate Market Analysis Project</h1>
+        <p>Machine Learning Analysis of 2.2M+ Property Records Across the United States</p>
+        <div class="project-meta">
+            <div class="meta-item">
+                <div class="meta-label">Dataset Size</div>
+                <div class="meta-value">2.2M+ Records</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Model Accuracy</div>
+                <div class="meta-value">45.7%</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">States Analyzed</div>
+                <div class="meta-value">15</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Analysis Type</div>
+                <div class="meta-value">Predictive ML</div>
+            </div>
+        </div>
+        <div class="tech-stack">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">Pandas</span>
+            <span class="tech-tag">Scikit-learn</span>
+            <span class="tech-tag">Random Forest</span>
+            <span class="tech-tag">Data Visualization</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <section id="overview" class="section">
+            <div class="section-header">
+                <h2>Project Overview</h2>
+                <span class="badge">Data Science</span>
+            </div>
+            
+            <div class="methodology">
+                <h3>Project Objectives</h3>
+                <ul>
+                    <li>Analyze pricing patterns across 2.2+ million real estate records</li>
+                    <li>Build predictive models to estimate property values</li>
+                    <li>Identify key factors that influence real estate prices</li>
+                    <li>Provide market insights for different geographic regions</li>
+                    <li>Compare machine learning model performance for price prediction</li>
+                </ul>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">2.2M+</div>
+                    <div class="metric-label">Property Records</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">12</div>
+                    <div class="metric-label">Features Analyzed</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">45.7%</div>
+                    <div class="metric-label">Best Model R² Score</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">$256K</div>
+                    <div class="metric-label">Mean Absolute Error</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="methodology" class="section">
+            <div class="section-header">
+                <h2>Methodology</h2>
+                <span class="badge">ML Pipeline</span>
+            </div>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>📊 Data Processing</h3>
+                    <div class="insight-box">
+                        <h4>Dataset Characteristics</h4>
+                        <p>Original dataset contained 2,226,382 records with 12 features including price, location, property details, and historical sales data.</p>
+                        <p>Significant missing data in key features: 25% missing house_size, 23% missing bathrooms, 22% missing bedrooms.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🔧 Feature Engineering</h3>
+                    <div class="insight-box">
+                        <h4>New Features Created</h4>
+                        <p>Price per square foot calculation for standardized comparison</p>
+                        <p>Total rooms combination (bedrooms + bathrooms)</p>
+                        <p>Property category classification (Budget, Mid-range, High-end, Luxury)</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🤖 Model Training</h3>
+                    <div class="insight-box">
+                        <h4>Machine Learning Approach</h4>
+                        <p>Compared Linear Regression vs Random Forest models</p>
+                        <p>Used 80/20 train-test split on 936,955 properties from top 10 states</p>
+                        <p>Feature importance analysis to identify key pricing factors</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="results" class="section">
+            <div class="section-header">
+                <h2>Analysis Results</h2>
+                <span class="badge">Findings</span>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🏠 Market Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="priceDistChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h4>Key Findings</h4>
+                        <p>Mid-range properties (48%) dominate the market with 761K+ units</p>
+                        <p>Luxury segment represents only 9% of inventory</p>
+                        <p>Strong middle-market presence indicates healthy market diversity</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📍 Geographic Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="stateChart"></canvas>
+                    </div>
+                    <div class="recommendation-box">
+                        <h4>Market Concentration</h4>
+                        <p>Top 3 states (CA, FL, TX) account for 26% of all properties</p>
+                        <p>California leads with 190K+ properties, followed by Florida (182K) and Texas (158K)</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🔍 Feature Correlations</h3>
+                    <div class="chart-container">
+                        <canvas id="correlationChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h4>Price Correlation Analysis</h4>
+                        <p>Bathrooms and house size show strongest correlation (0.49 each)</p>
+                        <p>Price per square foot correlation: 0.42</p>
+                        <p>Bedroom count has weaker correlation (0.27)</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>⚡ Model Performance</h3>
+                    <div class="chart-container">
+                        <canvas id="modelChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h4>Algorithm Comparison</h4>
+                        <p>Random Forest outperformed Linear Regression</p>
+                        <p>R² improvement: 45.7% vs 39.8% (15% better)</p>
+                        <p>MAE improvement: $256K vs $310K (17% better)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="insights" class="section">
+            <div class="section-header">
+                <h2>Market Insights</h2>
+                <span class="badge">Analysis</span>
+            </div>
+
+            <div class="card full-width">
+                <h3>🌟 Feature Importance Analysis</h3>
+                <div class="chart-container">
+                    <canvas id="featureChart"></canvas>
+                </div>
+                <div class="grid" style="margin-top: 1rem;">
+                    <div class="insight-box">
+                        <h4>Primary Value Drivers</h4>
+                        <p>House size drives 44% of price variation - most important factor</p>
+                        <p>Bathroom count contributes 33% - second most important</p>
+                        <p>Together, these two features explain 77% of the model's predictions</p>
+                    </div>
+                    <div class="insight-box">
+                        <h4>Geographic Premiums</h4>
+                        <p>California location adds 8% premium to property values</p>
+                        <p>New York contributes 3% location premium</p>
+                        <p>Other states show minimal individual impact on pricing</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card full-width">
+                <h3>📊 State-by-State Performance Analysis</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>State</th>
+                            <th>Property Count</th>
+                            <th>Median Price</th>
+                            <th>Average Price</th>
+                            <th>Price Gap</th>
+                            <th>Market Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>California</strong></td>
+                            <td>190,055</td>
+                            <td>$699,000</td>
+                            <td>$953,475</td>
+                            <td>+36%</td>
+                            <td><span class="status-badge status-high">Premium</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Washington</strong></td>
+                            <td>52,243</td>
+                            <td>$550,000</td>
+                            <td>$692,372</td>
+                            <td>+26%</td>
+                            <td><span class="status-badge status-high">High-Value</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>New York</strong></td>
+                            <td>67,081</td>
+                            <td>$389,000</td>
+                            <td>$790,544</td>
+                            <td>+103%</td>
+                            <td><span class="status-badge status-high">Luxury</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Florida</strong></td>
+                            <td>182,543</td>
+                            <td>$369,000</td>
+                            <td>$575,310</td>
+                            <td>+56%</td>
+                            <td><span class="status-badge status-medium">Growth</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Arizona</strong></td>
+                            <td>56,124</td>
+                            <td>$419,900</td>
+                            <td>$530,975</td>
+                            <td>+26%</td>
+                            <td><span class="status-badge status-medium">Stable</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="recommendation-box">
+                    <h4>Data Science Insights</h4>
+                    <p><strong>Model Limitations:</strong> 45.7% R² score indicates model explains less than half of price variation - additional features needed for better predictions</p>
+                    <p><strong>Geographic Patterns:</strong> Large median-to-average price gaps suggest significant outliers in premium markets (NY: +103%, FL: +56%)</p>
+                    <p><strong>Feature Engineering:</strong> House size and bathroom count are most predictive - focus on architectural features for model improvement</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <h2>Technical Implementation</h2>
+                <span class="badge">Code</span>
+            </div>
+            
+            <div class="methodology">
+                <h3>Key Technical Details</h3>
+                <ul>
+                    <li>Data preprocessing handled 22-25% missing values through strategic filtering</li>
+                    <li>One-hot encoding applied to categorical state variables for ML compatibility</li>
+                    <li>Random Forest hyperparameters: default configuration with feature importance extraction</li>
+                    <li>Cross-validation approach: single train-test split (80/20) on 937K filtered records</li>
+                    <li>Performance metrics: R² score and Mean Absolute Error for model comparison</li>
+                    <li>Feature correlation analysis using Pearson correlation coefficient</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <div class="footer">
+        <p>Real Estate Market Analysis Project - Data Science Portfolio</p>
+        <p>Built with Python, Pandas, Scikit-learn, and Chart.js</p>
+    </div>
+
+    <script>
+        // Price Distribution Chart
+        const priceCtx = document.getElementById('priceDistChart').getContext('2d');
+        new Chart(priceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Mid-range', 'High-end', 'Budget', 'Luxury'],
+                datasets: [{
+                    data: [761657, 370807, 319622, 146218],
+                    backgroundColor: ['#1f6feb', '#2ea043', '#fb8500', '#8b5cf6'],
+                    borderWidth: 2,
+                    borderColor: '#0d1117'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            color: '#e6edf3'
+                        }
+                    }
+                }
+            }
+        });
+
+        // State Chart
+        const stateCtx = document.getElementById('stateChart').getContext('2d');
+        new Chart(stateCtx, {
+            type: 'bar',
+            data: {
+                labels: ['CA', 'FL', 'TX', 'NY', 'IL', 'PA', 'AZ', 'GA'],
+                datasets: [{
+                    label: 'Property Count (thousands)',
+                    data: [190.1, 182.5, 158.1, 67.1, 64.1, 57.8, 56.1, 54.7],
+                    backgroundColor: '#1f6feb',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Properties (thousands)',
+                            color: '#e6edf3'
+                        },
+                        ticks: {
+                            color: '#e6edf3'
+                        },
+                        grid: {
+                            color: '#21262d'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#e6edf3'
+                        },
+                        grid: {
+                            color: '#21262d'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Correlation Chart
+        const corrCtx = document.getElementById('correlationChart').getContext('2d');
+        new Chart(corrCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Bathrooms', 'House Size', 'Price/SqFt', 'Bedrooms'],
+                datasets: [{
+                    label: 'Correlation with Price',
+                    data: [0.495, 0.493, 0.422, 0.270],
+                    backgroundColor: ['#2ea043', '#1f6feb', '#fb8500', '#f85149'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 0.6,
+                        title: {
+                            display: true,
+                            text: 'Correlation Coefficient',
+                            color: '#e6edf3'
+                        },
+                        ticks: {
+                            color: '#e6edf3'
+                        },
+                        grid: {
+                            color: '#21262d'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#e6edf3'
+                        },
+                        grid: {
+                            color: '#21262d'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Model Performance Chart
+        const modelCtx = document.getElementById('modelChart').getContext('2d');
+        new Chart(modelCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Random Forest', 'Linear Regression'],
+                datasets: [{
+                    label: 'R² Score (%)',
+                    data: [45.7, 39.8],
+                    backgroundColor: ['#2ea043', '#8b949e'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 50,
+                        title: {
+                            display: true,
+                            text: 'Accuracy (%)',
+                            color: '#e6edf3'
+                        },
+                        ticks: {
+                            color: '#e6edf3'
+                        },
+                        grid: {
+                            color: '#21262d'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#e6edf3'
+                        },
+                        grid: {
+                            color: '#21262d'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Feature Importance Chart
+        const featureCtx = document.getElementById('featureChart').getContext('2d');
+        new Chart(featureCtx, {
+            type: 'bar',
+            data: {
+                labels: ['House Size', 'Bathrooms', 'California', 'Bedrooms', 'New York', 'Florida'],
+                datasets: [{
+                    label: 'Feature Importance (%)',
+                    data: [43.8, 32.7, 8.3, 6.7, 3.0, 2.6],
+                    backgroundColor: '#1f6feb',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Importance (%)',
+                            color: '#e6edf3'
+                        },
+                        ticks: {
+                            color: '#e6edf3'
+                        },
+                        grid: {
+                            color: '#21262d'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#e6edf3'
+                        },
+                        grid: {
+                            color: '#21262d'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Navbar scroll behavior
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
